@@ -1,0 +1,10 @@
+kit_encoders:
+  ros__parameters:
+    right_wheel:
+      GPIOs:
+        channel_A: 23
+        channel_B: 22
+    left_wheel:
+      GPIOs:
+        channel_A: 24
+        channel_B: 25
