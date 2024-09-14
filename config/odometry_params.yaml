@@ -8,4 +8,4 @@ kit_odometry:
       wheel_radius: 0.0315
       wheel_base: 0.15
     encoders:
-      ticks_per_revolution: 10
+      ticks_per_revolution: 20

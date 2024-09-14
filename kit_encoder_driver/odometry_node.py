@@ -3,6 +3,7 @@ from nav_msgs.msg import Odometry
 import rclpy
 from rclpy.node import Node
 import math
+from tf_transformations import quaternion_from_euler
 
 class OdometryNode(Node):
     def __init__(self):
@@ -28,7 +29,7 @@ class OdometryNode(Node):
         self.declare_parameter('robot_dimensions.wheel_base', 0.15)    
 
         # Retirado da especificação dos encoders da RoboCore
-        self.declare_parameter('encoders.ticks_per_revolution', 10)
+        self.declare_parameter('encoders.ticks_per_revolution', 20)
 
         # Obtém os valores dos ROS params, caso o node tenha sido inicializado com valores customizados
         self.wheel_radius = self.get_parameter('robot_dimensions.wheel_radius').value
@@ -100,8 +101,15 @@ class OdometryNode(Node):
         # Define a posição e orientação do robô
         odom_msg.pose.pose.position.x = self.x
         odom_msg.pose.pose.position.y = self.y
-        odom_msg.pose.pose.orientation.z = math.sin(self.theta / 2.0)
-        odom_msg.pose.pose.orientation.w = math.cos(self.theta / 2.0)
+        odom_msg.pose.pose.position.z = 0.0
+
+        # Converter o theta (yaw do robo) em um quaternion
+        quaternion = quaternion_from_euler(0, 0, self.theta)
+
+        odom_msg.pose.pose.orientation.x = quaternion[0]
+        odom_msg.pose.pose.orientation.y = quaternion[1]
+        odom_msg.pose.pose.orientation.z = quaternion[2]
+        odom_msg.pose.pose.orientation.w = quaternion[3]
 
         # Publica os dados de odometria
         self.odom_publisher.publish(odom_msg)
