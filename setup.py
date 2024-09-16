@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'encoder_node = kit_encoder_driver.encoder_node:main',
+            'encoder_node = kit_encoder_driver.quadratic_encoder_node:main',
             'odometry_node = kit_encoder_driver.odometry_node:main',
             'transformations_node = kit_encoder_driver.transformations_node:main'
         ],

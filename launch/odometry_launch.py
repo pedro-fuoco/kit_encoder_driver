@@ -24,6 +24,6 @@ def generate_launch_description():
         Node(
             package='kit_encoder_driver',
             executable='transformations_node',
-            name='kit_transformada'
+            name='kit_transform'
         )
     ])

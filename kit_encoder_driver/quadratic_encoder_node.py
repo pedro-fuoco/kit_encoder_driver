@@ -4,10 +4,10 @@ import rclpy
 from rclpy.node import Node
 
 
-class EncoderNode(Node):
+class QuadraticEncoderNode(Node):
     def __init__(self):
         # Inicializa o node ROS 2 que publica os sinais dos encoders de quadratura do Kit
-        super().__init__('encoder_node')
+        super().__init__('quadratic_encoder_node')
         
         # Cria os publicadores para enviar os "ticks" lidos através de cada um dos encoders
 
@@ -149,17 +149,17 @@ class EncoderNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)  # Inicializa o cliente ROS 2
-    encoder_node = EncoderNode()  # Cria o node do encoder
+    quadratic_encoder_node = QuadraticEncoderNode()  # Cria o node do encoder
 
     try:
         # Mantém o node ativo para continuar capturando e publicando ticks
-        rclpy.spin(encoder_node)
+        rclpy.spin(quadratic_encoder_node)
     except KeyboardInterrupt:
         # Loga uma mensagem ao encerrar o node
-        encoder_node.get_logger().info('Shutting down encoder driver...')
+        quadratic_encoder_node.get_logger().info('Shutting down encoder driver...')
     finally:
         # Destrói o node e finaliza o cliente ROS 2
-        encoder_node.destroy_node() 
+        quadratic_encoder_node.destroy_node() 
         rclpy.shutdown()
 
 # Ponto de entrada do script
