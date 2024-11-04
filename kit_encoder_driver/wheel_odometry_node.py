@@ -5,10 +5,10 @@ from rclpy.node import Node
 import math
 from tf_transformations import quaternion_from_euler
 
-class OdometryNode(Node):
+class WheelOdometryNode(Node):
     def __init__(self):
         # Inicializa o node ROS 2 que calcula a odometria do Kit com base na leitura dos encoders
-        super().__init__('odometry_node')
+        super().__init__('wheel_odometry_node')
 
         # Cria os subscritores para ler os "ticks" lidos através de cada um dos encoders
 
@@ -17,7 +17,7 @@ class OdometryNode(Node):
 
         # Cria o publicador para os dados de odometria
         # O nome do tópico segue os padrões encontrados em http://wiki.ros.org/ROS/Patterns/Conventions
-        self.odom_publisher = self.create_publisher(Odometry, 'kit/odom', 10)
+        self.odom_publisher = self.create_publisher(Odometry, 'kit/wheel/odom', 10)
         
         # Declara os parâmetros e define os valores padrão
         # Os encoders podem estar invertidos, vamos usar esse dado para corigir as distancias calculadas abaixo
@@ -49,7 +49,7 @@ class OdometryNode(Node):
 
         # Log para confirmar a inicialização com os parâmetros configurados
         self.get_logger().info(
-            'OdometryNode initialized with '
+            'WheelOdometryNode initialized with '
             f'wheel_radius: {self.wheel_radius}, '
             f'wheel_base: {self.wheel_base}, '
             f'ticks_per_revolution: {self.ticks_per_revolution}, '
@@ -116,17 +116,17 @@ class OdometryNode(Node):
 
 def main(args=None):
     rclpy.init(args=args) # Inicializa o cliente ROS 2
-    odometry_node = OdometryNode() # Cria o node do encoder
+    wheel_odometry_node = WheelOdometryNode() # Cria o node do encoder
 
     try:
         # Mantém o node ativo para continuar calculando a odometria
-        rclpy.spin(odometry_node)
+        rclpy.spin(wheel_odometry_node)
     except KeyboardInterrupt:
         # Loga uma mensagem ao encerrar o node
-        odometry_node.get_logger().info('Shutting down odometry driver...')
+        wheel_odometry_node.get_logger().info('Shutting down odometry driver...')
     finally:
         # Destrói o node e finaliza o cliente ROS 2
-        odometry_node.destroy_node()
+        wheel_odometry_node.destroy_node()
         rclpy.shutdown() 
 
 # Ponto de entrada do script

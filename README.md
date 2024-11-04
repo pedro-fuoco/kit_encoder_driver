@@ -63,7 +63,12 @@ colcon build --packages-select kit_encoder_driver
 ```
 
 ## Launch
-Para iniciar os programas `encoder_node`, `odometry_node` e `transformations_node`, responsaveis por publicar os ticks dos encoders, calcular a odometria e publicar as transformadas entre os frames de referencia, respectivamente, basta utilizar o seguinte comando:
+Para iniciar os programas `encoder_node`, `odometry_node`, responsaveis por publicar os ticks dos encoders e calcular a odometria das rodas, respectivamente, basta utilizar o seguinte comando:
 ```bash
 ros2 launch kit_encoder_driver odometry_launch.py
+```
+
+Para facilitar o teste desse pacote, foi criado um modo de `debug`, no qual a transformação entre os eixos `base_link` e `odom` é publicada diretamente pelo node `transformations_node`. Isso permite que a odometria publicada seja visualizada em ferramentas como o `rviz2`. Dito isso, esse modo deve ser desabilitado sempre que outro pacote for responsável por publicar a transformação dos eixos do robô. Para habilita-lo, base rodar o seguinte comando:
+```bash
+ros2 launch kit_encoder_driver odometry_launch.py debug:=true
 ```
