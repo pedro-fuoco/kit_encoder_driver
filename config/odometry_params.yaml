@@ -1,11 +1,15 @@
 kit_odometry:
   ros__parameters:
+    sampling_frequency: 15.0
+
     right_wheel:
       ticks_inversed: false
     left_wheel:
       ticks_inversed: true
+    
     robot_dimensions:
       wheel_radius: 0.0315
       wheel_base: 0.15
+    
     encoders:
       ticks_per_revolution: 20

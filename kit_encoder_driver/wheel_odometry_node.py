@@ -20,6 +20,10 @@ class WheelOdometryNode(Node):
         self.odom_publisher = self.create_publisher(Odometry, 'kit/wheel/odom', 10)
         
         # Declara os parâmetros e define os valores padrão
+
+        # Frequencia de publicação desse nó, independente de atualizações nas informações dos encoders
+        self.declare_parameter('sampling_frequency', 15.0)
+
         # Os encoders podem estar invertidos, vamos usar esse dado para corigir as distancias calculadas abaixo
         self.declare_parameter('right_wheel.ticks_inversed', False) 
         self.declare_parameter('left_wheel.ticks_inversed', True)  
@@ -32,6 +36,7 @@ class WheelOdometryNode(Node):
         self.declare_parameter('encoders.ticks_per_revolution', 20)
 
         # Obtém os valores dos ROS params, caso o node tenha sido inicializado com valores customizados
+        self.sampling_frequency = self.get_parameter('sampling_frequency').value
         self.wheel_radius = self.get_parameter('robot_dimensions.wheel_radius').value
         self.wheel_base = self.get_parameter('robot_dimensions.wheel_base').value
         self.ticks_per_revolution = self.get_parameter('encoders.ticks_per_revolution').value
@@ -47,9 +52,13 @@ class WheelOdometryNode(Node):
         self.y = 0.0
         self.theta = 0.0
 
+        # Timer é criado para temporizar as publicações de odometria, indepentente da atualização da odometria
+        self.timer = self.create_timer(1.0 / self.sampling_frequency, self.publish_odometry)
+
         # Log para confirmar a inicialização com os parâmetros configurados
         self.get_logger().info(
             'WheelOdometryNode initialized with '
+            f'sampling_frequency: {self.sampling_frequency}, '
             f'wheel_radius: {self.wheel_radius}, '
             f'wheel_base: {self.wheel_base}, '
             f'ticks_per_revolution: {self.ticks_per_revolution}, '
@@ -90,6 +99,7 @@ class WheelOdometryNode(Node):
         # Normaliza theta para mantê-lo no intervalo [-pi, pi]
         self.theta = (self.theta + math.pi) % (2 * math.pi) - math.pi
 
+    def publish_odometry(self):
         # Cria a mensagem de odometria
         odom_msg = Odometry()
         
