@@ -14,7 +14,7 @@ class TransformationNode(Node):
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
         
         # Cria o subscritor para pegar as informações de odometria do Kit
-        self.create_subscription(Odometry, 'kit/odom', self.odom_callback, 10)
+        self.create_subscription(Odometry, 'kit/wheel/odom', self.odom_callback, 10)
 
         # Log para confirmar a inicialização
         self.get_logger().info('TransformationNode initialized')
