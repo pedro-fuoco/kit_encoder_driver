@@ -33,7 +33,7 @@ class WheelOdometryNode(Node):
         self.declare_parameter('robot_dimensions.wheel_base', 0.15)    
 
         # Retirado da especificação dos encoders da RoboCore
-        self.declare_parameter('encoders.ticks_per_revolution', 20)
+        self.declare_parameter('encoders.ticks_per_revolution', 40)
 
         # Obtém os valores dos ROS params, caso o node tenha sido inicializado com valores customizados
         self.sampling_frequency = self.get_parameter('sampling_frequency').value

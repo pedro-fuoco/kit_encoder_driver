@@ -12,4 +12,4 @@ kit_odometry:
       wheel_base: 0.15
     
     encoders:
-      ticks_per_revolution: 20
+      ticks_per_revolution: 40
