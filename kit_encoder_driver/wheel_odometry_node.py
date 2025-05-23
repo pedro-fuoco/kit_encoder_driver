@@ -52,6 +52,12 @@ class WheelOdometryNode(Node):
         self.y = 0.0
         self.theta = 0.0
 
+        # Velocidade atual do robô
+        self.last_time = self.get_clock().now()
+        self.linear_velocity = 0.0
+        self.angular_velocity = 0.0
+
+
         # Timer é criado para temporizar as publicações de odometria, indepentente da atualização da odometria
         self.timer = self.create_timer(1.0 / self.sampling_frequency, self.publish_odometry)
 
@@ -77,6 +83,9 @@ class WheelOdometryNode(Node):
         self.prev_right_ticks = msg.data  # Armazena o valor atual dos ticks
 
     def update_odometry(self, left_ticks, right_ticks):
+        current_time = self.get_clock().now()
+        dt = (current_time - self.last_time).nanoseconds * 1e-9
+
         # Calcula a distância percorrida por cada roda
         left_distance = (left_ticks - self.prev_left_ticks) * (2 * math.pi * self.wheel_radius / self.ticks_per_revolution)
         right_distance = (right_ticks - self.prev_right_ticks) * (2 * math.pi * self.wheel_radius / self.ticks_per_revolution)
@@ -91,6 +100,13 @@ class WheelOdometryNode(Node):
         delta_distance = (left_distance + right_distance) / 2.0
         delta_theta = (right_distance - left_distance) / self.wheel_base
 
+        if dt == 0:
+            self.linear_velocity = 0
+            self.angular_velocity = 0
+        else:
+            self.linear_velocity = delta_distance / dt
+            self.angular_velocity = delta_theta / dt
+
         # Atualiza a posição do robô
         self.x += delta_distance * math.cos(self.theta + delta_theta / 2.0)
         self.y += delta_distance * math.sin(self.theta + delta_theta / 2.0)
@@ -98,6 +114,8 @@ class WheelOdometryNode(Node):
 
         # Normaliza theta para mantê-lo no intervalo [-pi, pi]
         self.theta = (self.theta + math.pi) % (2 * math.pi) - math.pi
+
+        self.last_time = current_time
 
     def publish_odometry(self):
         # Cria a mensagem de odometria
@@ -120,6 +138,13 @@ class WheelOdometryNode(Node):
         odom_msg.pose.pose.orientation.y = quaternion[1]
         odom_msg.pose.pose.orientation.z = quaternion[2]
         odom_msg.pose.pose.orientation.w = quaternion[3]
+
+        odom_msg.twist.twist.linear.x = self.linear_velocity
+        odom_msg.twist.twist.linear.y = 0.0
+        odom_msg.twist.twist.linear.z = 0.0
+        odom_msg.twist.twist.angular.x = 0.0
+        odom_msg.twist.twist.angular.y = 0.0
+        odom_msg.twist.twist.angular.z = self.angular_velocity
 
         # Publica os dados de odometria
         self.odom_publisher.publish(odom_msg)
